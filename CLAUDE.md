@@ -130,12 +130,8 @@ Sidekiq handles asynchronous tasks:
 ### Testing Philosophy
 - Comprehensive test coverage using Rails' built-in Minitest
 - Fixtures for test data (avoid FactoryBot)
-- Keep fixtures minimal (2-3 per model for base cases)
 - VCR for external API testing
-- System tests for critical user flows (use sparingly)
 - Test helpers in `test/support/` for common scenarios
-- Only test critical code paths that significantly increase confidence
-- Write tests as you go, when required
 
 ### Performance Considerations
 - Database queries optimized with proper indexes
@@ -237,37 +233,8 @@ Sidekiq handles asynchronous tasks:
 
 ### General Testing Rules
 - **ALWAYS use Minitest + fixtures** (NEVER RSpec or factories)
-- Keep fixtures minimal (2-3 per model for base cases)
-- Create edge cases on-the-fly within test context
 - Use Rails helpers for large fixture creation needs
 
-### Test Quality Guidelines
-- **Write minimal, effective tests** - system tests sparingly
-- **Only test critical and important code paths**
-- **Test boundaries correctly:**
-  - Commands: test they were called with correct params
-  - Queries: test output
-  - Don't test implementation details of other classes
-
-### Testing Examples
-
-```ruby
-# GOOD - Testing critical domain business logic
-test "syncs balances" do
-  Holding::Syncer.any_instance.expects(:sync_holdings).returns([]).once
-  assert_difference "@account.balances.count", 2 do
-    Balance::Syncer.new(@account, strategy: :forward).sync_balances
-  end
-end
-
-# BAD - Testing ActiveRecord functionality
-test "saves balance" do 
-  balance_record = Balance.new(balance: 100, currency: "USD")
-  assert balance_record.save
-end
-```
-
-### Stubs and Mocks
-- Use `mocha` gem
-- Prefer `OpenStruct` for mock instances
-- Only mock what's necessary
+- **Stubs and mocks**
+  - Use `mocha` gem
+  - Always prefer `OpenStruct` when creating mock instances, or in complex cases, a mock class
