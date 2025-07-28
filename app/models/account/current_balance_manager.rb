@@ -65,9 +65,17 @@ class Account::CurrentBalanceManager
     #                             gets us to the desired balance. This ensures we don't append unnecessary reconciliations to the account, which "reset" the value from that
     #                             date forward (not user's intent).
     #
-    # For more documentation on these auto-update strategies, see the test cases.
     def set_current_balance_for_manual_account(balance)
       # If we're dealing with a cash account that has no reconciliations, use "Transaction adjustment" strategy (update opening balance to "back in" to the desired current balance)
+      # If a user has an opening balance (valuation) for their manual *Depository* or *CreditCard* account and has 1+ transactions, the intent of
+      # "updating current balance" typically means that their start balance is incorrect. We follow that user intent
+      # by default and find the delta required, and update the opening balance so that the timeline reflects this current balance
+      #
+      # The purpose of this is so we're not cluttering up their timeline with "balance reconciliations" that reset the balance
+      # on the current date. Our goal is to keep the timeline with as few "Valuations" as possible.
+      #
+      # If we ever build a UI that gives user options, this test expectation may require some updates, but for now this
+      # is the least surprising outcome.
       if account.balance_type == :cash && account.valuations.reconciliation.empty?
         adjust_opening_balance_with_delta(new_balance: balance, old_balance: account.balance)
       else
