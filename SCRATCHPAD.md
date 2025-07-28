@@ -22,8 +22,3 @@
 - `ApiRateLimiter` service: per-API-key rate limiting in Redis.
 - `Import` model: CSV parsing and mapping; `sanitize_number` method handles different number formats.
 - `TransactionsController` has filtering logic and parameter persistence.
-
-## Tests
-- Extensive tests exist for Money, Sync, Transaction::Search, OpeningBalanceManager, and CurrentBalanceManager, mostly added mid-2025 (after March 2025).
-- Import model lacks direct tests for some helper methods like `sanitize_number`.
-
